@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Tag;
 use App\Resume;
+use App\ResumeTag;
 
 class TagController extends Controller
 {
@@ -37,12 +38,17 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        $tag = $request->input('tag');
-        $newTag = new Tag();
-        $newTag->tag = $tag;
-        $newTag->save();
-        $tags = Tag::all();
-        return view('index_tag', ['tags' => $tags]);
+        if ($request->input('delete')){
+            $this->destroy($request->input('delete'));
+        }
+        else {
+            $tag = $request->input('tag');
+            $newTag = new Tag();
+            $newTag->tag = $tag;
+            $newTag->save();
+            $tags = Tag::all();
+            return view('index_tag', ['tags' => $tags]);
+        }
     }
 
     /**
@@ -100,6 +106,12 @@ class TagController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $newTag = Tag::find($id);
+        $newTag->delete();
+
+        $newResumeTag = ResumeTag::where("tag_id", $id);
+        $newResumeTag->delete();
+        
+        echo "<a href='/tags'>go back to tags</a>";
     }
 }

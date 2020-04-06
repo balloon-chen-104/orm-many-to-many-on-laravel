@@ -39,26 +39,32 @@ class ResumeController extends Controller
      */
     public function store(Request $request)
     {
-        $resume = $request->input('resume');
-        $resume_content = $request->input('resume_content');
-        $newResume = new Resume();
-        $newResume->resume = $resume;
-        $newResume->resume_content = $resume_content;
-        $newResume->save();
-        
-        $inputs = $request->input();
-        foreach($inputs as $key => $value){
-            if($key == "resume" || $key == "resume_content"){
-                continue;
-            }
-            $newResumeTag = new ResumeTag();
-            $newResumeTag->resume_id = $newResume->id;
-            $newResumeTag->tag_id = $value;
-            $newResumeTag->save();
+        // 要刪除某資料時用 post 方法進來這裡再轉給 destory() 處理
+        if ($request->input('delete')){
+            $this->destroy($request->input('delete'));
         }
-
-        $resumes = Resume::all();
-        return view('index_resume', ['resumes' => $resumes]);
+        else {
+            $resume = $request->input('resume');
+            $resume_content = $request->input('resume_content');
+            $newResume = new Resume();
+            $newResume->resume = $resume;
+            $newResume->resume_content = $resume_content;
+            $newResume->save();
+            
+            $inputs = $request->input();
+            foreach($inputs as $key => $value){
+                if($key == "resume" || $key == "resume_content"){
+                    continue;
+                }
+                $newResumeTag = new ResumeTag();
+                $newResumeTag->resume_id = $newResume->id;
+                $newResumeTag->tag_id = $value;
+                $newResumeTag->save();
+            }
+    
+            $resumes = Resume::all();
+            return view('index_resume', ['resumes' => $resumes]);
+        }
     }
 
     /**
@@ -140,7 +146,7 @@ class ResumeController extends Controller
         $newResumeTag = ResumeTag::where("resume_id", $id);
         $newResumeTag->delete();
         
-        $resumes = Resume::all();
-        return $resumes;
+        // destory 多繞一步，無法直接 return view 或者 Resume::all()
+        echo "<a href='/resumes'>go back to resumes</a>";
     }
 }

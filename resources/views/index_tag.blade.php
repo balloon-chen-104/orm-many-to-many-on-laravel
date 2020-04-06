@@ -21,7 +21,10 @@
                     <td><a href="/tags/{{ $tag->id }}">{{ $tag->tag }}</a></td>
                     <td>
                         <a href="/tags/{{ $tag->id }}/edit">edit</a>
-                        <a href="/tags">delete</a>
+                        <form action="/tags" method="post" style="display: inline">
+                            <input type="text" name="delete" value="{{ $tag->id }}" style="display: none">
+                            <input type="submit" value="delete">
+                        </form>
                     </td>
                 </tr>
             @endforeach

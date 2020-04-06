@@ -34,7 +34,10 @@
                     </td>
                     <td>
                         <a href="/resumes/{{ $resume->id }}/edit">edit</a>
-                        <a href="/resumes">delete</a>
+                        <form action="/resumes" method="post" style="display: inline">
+                            <input type="text" name="delete" value="{{ $resume->id }}" style="display: none">
+                            <input type="submit" value="delete">
+                        </form>
                     </td>
                 </tr>
             </tbody>
