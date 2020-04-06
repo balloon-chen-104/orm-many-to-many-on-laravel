@@ -1,0 +1,48 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "laravelProject1",
+        "description": "laravelProject1 APIs",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/",
+            "description": "laravelProject1 APIs"
+        }
+    ],
+    "paths": {
+        "/api/masks-inquiry-api": {
+            "get": {
+                "tags": [
+                    "MasksInquiry"
+                ],
+                "summary": "Get mask datas filter by area",
+                "description": "Return mask datas filter by area",
+                "operationId": "App\\Http\\Controllers\\MasksInquiryApiController::masksInquiryApi",
+                "parameters": [
+                    {
+                        "name": "area",
+                        "in": "query",
+                        "description": "Area to search",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    }
+                }
+            }
+        }
+    }
+}
