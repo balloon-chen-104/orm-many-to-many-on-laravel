@@ -8,6 +8,7 @@
 <body>
     <p>EDIT RESUME</p>
     <form action="/resumes/{{ $id }}" method="get">
+        @method('PUT')
         <div>
             <span>Title</span>
             <input type="text" name="resume" value="{{ $resume->resume }}">

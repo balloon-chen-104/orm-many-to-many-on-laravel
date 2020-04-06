@@ -76,7 +76,7 @@ class ResumeController extends Controller
     public function show(Request $request, $id)
     {
         // edit 的表單用 get 方法進來這裡再轉給 update() 處理
-        if($request->all()){
+        if($request->input('_method') == 'PUT'){
             $this->update($request, $id);
         }
         else {
@@ -119,7 +119,7 @@ class ResumeController extends Controller
 
         $inputs = $request->input();
         foreach($inputs as $key => $value){
-            if($key == "resume" || $key == "resume_content"){
+            if($key =="_method" || $key == "resume" || $key == "resume_content"){
                 continue;
             }
             $newResumeTag = new ResumeTag();
