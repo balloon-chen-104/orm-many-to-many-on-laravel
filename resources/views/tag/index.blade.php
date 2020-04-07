@@ -18,10 +18,11 @@
             <tbody>
             @foreach ($tags as $tag)
                 <tr>
-                    <td><a href="/tags/{{ $tag->id }}">{{ $tag->tag }}</a></td>
+                    <td><a href="{{ route('tags.show', $tag->id) }}">{{ $tag->tag }}</a></td>
                     <td>
-                        <a href="/tags/{{ $tag->id }}/edit">edit</a>
-                        <form action="/tags" method="post" style="display: inline">
+                        <a href="{{ route('tags.edit', $tag->id) }}">edit</a>
+                        <form action="{{ route('tags.destroy', $tag->id) }}" method="post" style="display: inline">
+                            @method('DELETE')
                             <input type="text" name="delete" value="{{ $tag->id }}" style="display: none">
                             <input type="submit" value="delete">
                         </form>
@@ -30,9 +31,9 @@
             @endforeach
             </tbody>
         </table>
-        <a href='/tags/create'>add new tag</a>
+        <a href="{{ route('tags.create') }}">add new tag</a>
         <br>
-        <a href='/resumes'>go back to resumes</a>
+        <a href="{{ route('resumes.index') }}">go back to resumes</a>
     </div>
 </body>
 </html>

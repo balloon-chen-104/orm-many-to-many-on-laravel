@@ -19,7 +19,7 @@
             <tbody>
             @foreach ($resumes as $resume)
                 <tr>
-                    <td><a href="/resumes/{{ $resume->id }}">{{ $resume->resume }}</a></td>
+                    <td><a href="{{ route('resumes.show', $resume->id) }}">{{ $resume->resume }}</a></td>
                     <td>{{ $resume->resume_content }}</td>
                     <td>
                     @php
@@ -35,7 +35,7 @@
             @endforeach
             </tbody>
         </table>
-        <a href='/resumes/create'>add new resume</a>
+        <a href="{{ route('resumes.create') }}">add new resume</a>
     </div>
 </body>
 </html>

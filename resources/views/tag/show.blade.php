@@ -31,7 +31,7 @@
                 </tr>
             </tbody>
         </table>
-        <a href='/tags'>go back</a>
+        <a href="{{ route('tags.index') }}">go back</a>
     </div>
 </body>
 </html>

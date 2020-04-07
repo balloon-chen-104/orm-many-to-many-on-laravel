@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Tag;
 use App\Resume;
 use App\ResumeTag;
+use Redirect;
 
 class TagController extends Controller
 {
@@ -17,7 +18,7 @@ class TagController extends Controller
     public function index()
     {
         $tags = Tag::all();
-        return view('index_tag', ['tags' => $tags]);
+        return view('tag.index', ['tags' => $tags]);
     }
 
     /**
@@ -27,7 +28,7 @@ class TagController extends Controller
      */
     public function create()
     {
-        return view('create_tag');
+        return view('tag.create');
     }
 
     /**
@@ -38,17 +39,11 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->input('delete')){
-            $this->destroy($request->input('delete'));
-        }
-        else {
-            $tag = $request->input('tag');
-            $newTag = new Tag();
-            $newTag->tag = $tag;
-            $newTag->save();
-            $tags = Tag::all();
-            return view('index_tag', ['tags' => $tags]);
-        }
+        $tag = $request->input('tag');
+        $newTag = new Tag();
+        $newTag->tag = $tag;
+        $newTag->save();
+        return Redirect::to('tags')->with('success', 'Tag stored successfully');
     }
 
     /**
@@ -59,14 +54,9 @@ class TagController extends Controller
      */
     public function show(Request $request, $id)
     {
-        if($request->all()){
-            $this->update($request, $id);
-        }
-        else {
-            $tag = Tag::find($id);
-            $resumes = Resume::all();
-            return view('show_tag', ['tag' => $tag, 'resumes' => $resumes]);
-        }
+        $tag = Tag::find($id);
+        $resumes = Resume::all();
+        return view('tag.show', ['tag' => $tag, 'resumes' => $resumes]);
     }
 
     /**
@@ -78,7 +68,7 @@ class TagController extends Controller
     public function edit($id)
     {
         $tag = Tag::find($id);
-        return view('edit_tag' ,['id' => $id, 'tag' => $tag]);
+        return view('tag.edit' ,['id' => $id, 'tag' => $tag]);
     }
 
     /**
@@ -95,7 +85,7 @@ class TagController extends Controller
         $oldTag->tag = $tag;
         $oldTag->save();
 
-        echo "<a href='/tags'>go back</a>";
+        return Redirect::to("tags")->with('success', 'Tag updated successfully');
     }
 
     /**
@@ -112,6 +102,6 @@ class TagController extends Controller
         $newResumeTag = ResumeTag::where("tag_id", $id);
         $newResumeTag->delete();
         
-        echo "<a href='/tags'>go back to tags</a>";
+        return Redirect::to('tags')->with('success', 'Tag deleted successfully');
     }
 }

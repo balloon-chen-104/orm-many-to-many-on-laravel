@@ -33,8 +33,9 @@
                     {{ $tagsInString }}
                     </td>
                     <td>
-                        <a href="/resumes/{{ $resume->id }}/edit">edit</a>
-                        <form action="/resumes" method="post" style="display: inline">
+                        <a href="{{ route('resumes.edit', $resume->id) }}">edit</a>
+                        <form action="{{ route('resumes.destroy', $resume->id) }}" method="post" style="display: inline">
+                            @method('DELETE')
                             <input type="text" name="delete" value="{{ $resume->id }}" style="display: none">
                             <input type="submit" value="delete">
                         </form>
@@ -42,7 +43,7 @@
                 </tr>
             </tbody>
         </table>
-        <a href='/resumes'>go back to resumes</a>
+        <a href="{{ route('resumes.index') }}">go back to resumes</a>
     </div>
 </body>
 </html>

@@ -7,7 +7,7 @@
 </head>
 <body>
     <p>EDIT RESUME</p>
-    <form action="/resumes/{{ $id }}" method="get">
+    <form action="{{ route('resumes.update', $resume->id) }}" method="post">
         @method('PUT')
         <div>
             <span>Title</span>
@@ -36,6 +36,6 @@
         </div>
         <input type="submit" value="submit">
     </form>
-    <a href="/resumes/{{ $id }}">go back</a>
+    <a href="{{ route('resumes.show', $resume->id) }}">go back</a>
 </body>
 </html>

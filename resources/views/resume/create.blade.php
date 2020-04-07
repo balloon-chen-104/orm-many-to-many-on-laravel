@@ -7,7 +7,7 @@
 </head>
 <body>
     <p>ADD RESUME</p>
-    <form action="/resumes" method="post">
+    <form action="{{ route('resumes.store') }}" method="post">
         <div>
             <span>Title</span>
             <input type="text" name="resume">
@@ -27,6 +27,6 @@
             <input type="submit" value="submit">
         </div>
     </form>
-    <a href="/resumes">go back</a>
+    <a href="{{ route('resumes.index') }}">go back</a>
 </body>
 </html>

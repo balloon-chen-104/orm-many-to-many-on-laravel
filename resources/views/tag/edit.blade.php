@@ -7,7 +7,8 @@
 </head>
 <body>
     <p>EDIT TAG</p>
-    <form action="/tags/{{ $id }}" method="get">
+    <form action="{{ route('tags.update', $tag->id) }}" method="post">
+        @method('PUT')
         <div>
             <span>Tag Name</span>
             <input type="text" name="tag" value="{{ $tag->tag }}">
@@ -15,6 +16,6 @@
         </div>
     </form>
     <br>
-    <a href="/tags">go back</a>
+    <a href="{{ route('tags.index') }}">go back</a>
 </body>
 </html>

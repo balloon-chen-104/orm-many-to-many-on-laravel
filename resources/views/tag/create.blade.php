@@ -7,7 +7,7 @@
 </head>
 <body>
     <p>ADD NEW TAG</p>
-    <form action="/tags" method="post">
+    <form action="{{ route('tags.index') }}" method="post">
         <div>
             <span>Tag Name</span>
             <input type="text" name="tag">
@@ -15,6 +15,6 @@
         </div>
     </form>
     <br>
-    <a href="/tags">go back</a>
+    <a href="{{ route('tags.index') }}">go back</a>
 </body>
 </html>

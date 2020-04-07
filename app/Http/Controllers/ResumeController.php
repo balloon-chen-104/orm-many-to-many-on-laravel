@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Resume;
 use App\Tag;
 use App\ResumeTag;
+use Redirect;
 
 class ResumeController extends Controller
 {
@@ -17,7 +18,7 @@ class ResumeController extends Controller
     public function index()
     {
         $resumes = Resume::all();
-        return view('index_resume', ['resumes' => $resumes]);
+        return view('resume.index', ['resumes' => $resumes]);
     }
 
     /**
@@ -28,7 +29,7 @@ class ResumeController extends Controller
     public function create()
     {
         $tags = Tag::all();
-        return view('create_resume', ['tags' => $tags]);
+        return view('resume.create', ['tags' => $tags]);
     }
 
     /**
@@ -39,32 +40,25 @@ class ResumeController extends Controller
      */
     public function store(Request $request)
     {
-        // 要刪除某資料時用 post 方法進來這裡再轉給 destory() 處理
-        if ($request->input('delete')){
-            $this->destroy($request->input('delete'));
-        }
-        else {
-            $resume = $request->input('resume');
-            $resume_content = $request->input('resume_content');
-            $newResume = new Resume();
-            $newResume->resume = $resume;
-            $newResume->resume_content = $resume_content;
-            $newResume->save();
-            
-            $inputs = $request->input();
-            foreach($inputs as $key => $value){
-                if($key == "resume" || $key == "resume_content"){
-                    continue;
-                }
-                $newResumeTag = new ResumeTag();
-                $newResumeTag->resume_id = $newResume->id;
-                $newResumeTag->tag_id = $value;
-                $newResumeTag->save();
+        $resume = $request->input('resume');
+        $resume_content = $request->input('resume_content');
+        $newResume = new Resume();
+        $newResume->resume = $resume;
+        $newResume->resume_content = $resume_content;
+        $newResume->save();
+        
+        $inputs = $request->input();
+        foreach($inputs as $key => $value){
+            if($key == "resume" || $key == "resume_content"){
+                continue;
             }
-    
-            $resumes = Resume::all();
-            return view('index_resume', ['resumes' => $resumes]);
+            $newResumeTag = new ResumeTag();
+            $newResumeTag->resume_id = $newResume->id;
+            $newResumeTag->tag_id = $value;
+            $newResumeTag->save();
         }
+
+        return Redirect::to('resumes')->with('success', 'Resume stored successfully');
     }
 
     /**
@@ -75,14 +69,8 @@ class ResumeController extends Controller
      */
     public function show(Request $request, $id)
     {
-        // edit 的表單用 get 方法進來這裡再轉給 update() 處理
-        if($request->input('_method') == 'PUT'){
-            $this->update($request, $id);
-        }
-        else {
-            $resume = Resume::find($id);
-            return view('show_resume', ['resume' => $resume]);
-        }
+        $resume = Resume::find($id);
+        return view('resume.show', ['resume' => $resume]);
     }
 
     /**
@@ -95,7 +83,7 @@ class ResumeController extends Controller
     {
         $resume = Resume::find($id);
         $tags = Tag::all();
-        return view('edit_resume' ,['id' => $id, 'resume' => $resume, 'tags' => $tags]);
+        return view('resume.edit' ,['id' => $id, 'resume' => $resume, 'tags' => $tags]);
     }
 
     /**
@@ -128,8 +116,7 @@ class ResumeController extends Controller
             $newResumeTag->save();
         }
 
-        // update 多繞一步，無法直接 return view 或者 Resume::find($id)
-        echo "<a href='/resumes/$id'>go back</a>";
+        return Redirect::to("resumes/$id")->with('success', 'Resume updated successfully');
     }
 
     /**
@@ -146,7 +133,6 @@ class ResumeController extends Controller
         $newResumeTag = ResumeTag::where("resume_id", $id);
         $newResumeTag->delete();
         
-        // destory 多繞一步，無法直接 return view 或者 Resume::all()
-        echo "<a href='/resumes'>go back to resumes</a>";
+        return Redirect::to('resumes')->with('success', 'Resume deleted successfully');
     }
 }
