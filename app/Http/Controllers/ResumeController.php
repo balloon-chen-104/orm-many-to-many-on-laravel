@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Resume;
 use App\Tag;
-use App\ResumeTag;
 use Redirect;
 
 class ResumeController extends Controller
@@ -42,22 +41,21 @@ class ResumeController extends Controller
     {
         $resume = $request->input('resume');
         $resume_content = $request->input('resume_content');
-        $newResume = new Resume();
-        $newResume->resume = $resume;
-        $newResume->resume_content = $resume_content;
+        $tags = $request->input();
+        array_shift($tags);
+        array_shift($tags);
+
+        // $newResume = new Resume;
+        // $newResume->resume = $resume;
+        // $newResume->resume_content = $resume_content;
+        // $newResume->save();
+        // $newResume->tags()->attach($tags);
+        // $newResume->save();
+
+        $newResume = Resume::create(['resume' => $resume, 'resume_content' => $resume_content]);
+        $newResume->tags()->attach($tags);
         $newResume->save();
         
-        $inputs = $request->input();
-        foreach($inputs as $key => $value){
-            if($key == "resume" || $key == "resume_content"){
-                continue;
-            }
-            $newResumeTag = new ResumeTag();
-            $newResumeTag->resume_id = $newResume->id;
-            $newResumeTag->tag_id = $value;
-            $newResumeTag->save();
-        }
-
         return Redirect::to('resumes')->with('success', 'Resume stored successfully');
     }
 
@@ -97,24 +95,16 @@ class ResumeController extends Controller
     {
         $resume = $request->input('resume');
         $resume_content = $request->input('resume_content');
+        $tags = $request->input();
+        array_shift($tags);
+        array_shift($tags);
+        array_shift($tags);
+
         $oldResume = Resume::find($id);
         $oldResume->resume = $resume;
         $oldResume->resume_content = $resume_content;
+        $oldResume->tags()->sync($tags);
         $oldResume->save();
-
-        $newResumeTag = ResumeTag::where("resume_id", $id);
-        $newResumeTag->delete();
-
-        $inputs = $request->input();
-        foreach($inputs as $key => $value){
-            if($key =="_method" || $key == "resume" || $key == "resume_content"){
-                continue;
-            }
-            $newResumeTag = new ResumeTag();
-            $newResumeTag->resume_id = $id;
-            $newResumeTag->tag_id = $value;
-            $newResumeTag->save();
-        }
 
         return Redirect::to("resumes/$id")->with('success', 'Resume updated successfully');
     }
@@ -127,11 +117,9 @@ class ResumeController extends Controller
      */
     public function destroy($id)
     {
-        $newResume = Resume::find($id);
-        $newResume->delete();
-
-        $newResumeTag = ResumeTag::where("resume_id", $id);
-        $newResumeTag->delete();
+        $oldResume = Resume::find($id);
+        $oldResume->tags()->detach();
+        $oldResume->delete();
         
         return Redirect::to('resumes')->with('success', 'Resume deleted successfully');
     }

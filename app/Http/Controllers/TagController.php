@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Tag;
 use App\Resume;
-use App\ResumeTag;
 use Redirect;
 
 class TagController extends Controller
@@ -40,9 +39,7 @@ class TagController extends Controller
     public function store(Request $request)
     {
         $tag = $request->input('tag');
-        $newTag = new Tag();
-        $newTag->tag = $tag;
-        $newTag->save();
+        $newTag = Tag::create(['tag' => $tag]);
         return Redirect::to('tags')->with('success', 'Tag stored successfully');
     }
 
@@ -84,6 +81,7 @@ class TagController extends Controller
         $oldTag = Tag::find($id);
         $oldTag->tag = $tag;
         $oldTag->save();
+        // $oldTag = Tag::create(['tag' => $tag]);
 
         return Redirect::to("tags")->with('success', 'Tag updated successfully');
     }
@@ -96,11 +94,9 @@ class TagController extends Controller
      */
     public function destroy($id)
     {
-        $newTag = Tag::find($id);
-        $newTag->delete();
-
-        $newResumeTag = ResumeTag::where("tag_id", $id);
-        $newResumeTag->delete();
+        $oldTag = Tag::find($id);
+        $oldTag->resumes()->detach();
+        $oldTag->delete();
         
         return Redirect::to('tags')->with('success', 'Tag deleted successfully');
     }

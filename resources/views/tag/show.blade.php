@@ -30,25 +30,3 @@
 </div>
 
 @endsection
-
-<style>
-
-* {
-    margin: 10px;
-}
-
-table, th, td {
-    border: 1px dashed black;
-    text-align: center;
-    vertical-align: middle;
-}
-
-th {
-    font-weight: bold;
-}
-
-th, td {
-    padding: 10px;
-}
-
-</style>

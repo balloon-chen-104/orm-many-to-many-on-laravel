@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Resume extends Model
 {
-    protected $fillable = [];
+    protected $fillable = ['resume', 'resume_content'];
     
     public function tags()
     {
-        return $this->belongsToMany('App\Tag', "resume_tags");
+        return $this->belongsToMany('App\Tag');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateResumeTagsTable extends Migration
+class CreateResumeTagTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateResumeTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('resume_tags', function (Blueprint $table) {
+        Schema::create('resume_tag', function (Blueprint $table) {
             $table->id();
             $table->integer('resume_id');
             $table->integer('tag_id');
-            $table->timestamps();
         });
     }
 
