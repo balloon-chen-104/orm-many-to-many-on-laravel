@@ -1,11 +1,10 @@
-# ORM - Many to Many
-## Example: the relationship between resumes and tags
+# Resume Blog - ORM Demo
 
-This project is an example about using laravel's ORM to build the relationship between resumes and tags.
+## One to Many and Many to Many Relationships
+
+This project is an example about a Resume Blog, which is an implementation of one to many and many to many relationships. We use laravel's ORM to build it!
 
 ## Getting Started
-
-
 
 ### Prerequisites
 
@@ -39,9 +38,7 @@ To run the server on localhost, you need to open the docker application and run 
 orm-many-to-many-on-laravel/laradoc$ docker-compose up -d nginx mysql redis workspace
 ```
 
-Well done! You can now see the default laravel website on 127.0.0.1
-
-If you want to shut down the server, run the following command.
+Well done! If you want to shut down the server, run the following command.
 
 ```
 orm-many-to-many-on-laravel/laradoc$ docker-compose down
@@ -49,7 +46,7 @@ orm-many-to-many-on-laravel/laradoc$ docker-compose down
 
 ### Database
 
-In order to use database, you should adjust the environment settings of DB in .env file. By default, it may work like this.
+In order to use database, you should adjust the environment settings of DB in .env file in the root folder. By default, it may work like this.
 
 ```
 DB_CONNECTION=mysql
@@ -60,13 +57,20 @@ DB_USERNAME=default
 DB_PASSWORD=secret
 ```
 
-We have provided three database: resumes, tags and resume_tags. To migrate, you should run the following command.
+We have provided four tables: users, resumes, tags and resume_tag. To migrate, you should run the following command.
 
 ```
 orm-many-to-many-on-laravel$ php artisan migrate
 ```
 
 You might want to have some fake datas. To have some, you could run the following command.
+
+> Notice: If you run the code below, you will have an administrator account which has the highest authority. Here are the datas of the account:
+
+> email: admin@resume.com
+> password: admin
+
+> If you don't run the following command. When you manually register the first account, it will be given the highest authority by default.
 
 ```
 orm-many-to-many-on-laravel$ php artisan db:seed
@@ -80,12 +84,30 @@ DB_HOST=mysql
 
 ## Usage
 
-We have two main entry points. You can do some experiments on them to see the relationship between them.
+#### Here is our [home page](http://127.0.0.1).
 
-* http://127.0.0.1/resumes
-Which you can see all the resumes.
-* http://127.0.0.1/tags
-Which you can see all the tags.
+#### We provide three authorities.
+
+1. Administrator
+    * Can read and update ALL users' datas (just R & U).
+    * Can manipulate ALL resumes (CRUD).
+    * Can manipulate ALL tags (CRUD).
+2. General User
+    * Can read and update THEIR OWN users' datas.
+    * Can create resumes and read ALL resumes.
+    * Can update and delete THEIR OWN resumes.
+    * CANNOT manipulate with tags but CAN bind tags to resume when they create or update one.
+3. Guest
+    * Can read ALL resumes only.
+
+#### The relationships we build.
+
+1. One to Many
+    * One user can have many resumes.
+    * One resume can only belongs to one user.
+2. Many to Many
+    * One resume can belongs to many tags.
+    * One tag can also belongs to many resumes.
 
 ## Author
 
