@@ -7,8 +7,18 @@ use App\Resume;
 use App\Tag;
 use Redirect;
 
-class ResumeController extends Controller
+class ResumesController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['index', 'show']]);
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -16,8 +26,8 @@ class ResumeController extends Controller
      */
     public function index()
     {
-        $resumes = Resume::all();
-        return view('resume.index', ['resumes' => $resumes]);
+        $resumes = Resume::orderBy('created_at', 'desc')->paginate(5);
+        return view('resumes.index', ['resumes' => $resumes]);
     }
 
     /**
@@ -28,7 +38,7 @@ class ResumeController extends Controller
     public function create()
     {
         $tags = Tag::all();
-        return view('resume.create', ['tags' => $tags]);
+        return view('resumes.create', ['tags' => $tags]);
     }
 
     /**
@@ -39,9 +49,22 @@ class ResumeController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request,
+            [
+                'resume' => 'required',
+                'resume_content' => 'required'
+            ],
+            [
+                'resume.required' => '標題欄不可為空',
+                'resume_content.required' => '內文欄不可為空'
+            ]
+        );
+        
         $resume = $request->input('resume');
         $resume_content = $request->input('resume_content');
+        $user_id = auth()->user()->id;
         $tags = $request->input();
+        array_shift($tags);
         array_shift($tags);
         array_shift($tags);
 
@@ -52,11 +75,11 @@ class ResumeController extends Controller
         // $newResume->tags()->attach($tags);
         // $newResume->save();
 
-        $newResume = Resume::create(['resume' => $resume, 'resume_content' => $resume_content]);
+        $newResume = Resume::create(['resume' => $resume, 'resume_content' => $resume_content, 'user_id' => $user_id]);
         $newResume->tags()->attach($tags);
         $newResume->save();
         
-        return Redirect::to('resumes')->with('success', 'Resume stored successfully');
+        return Redirect::to('resumes')->with('success', '履歷建立成功！');
     }
 
     /**
@@ -68,7 +91,7 @@ class ResumeController extends Controller
     public function show(Request $request, $id)
     {
         $resume = Resume::find($id);
-        return view('resume.show', ['resume' => $resume]);
+        return view('resumes.show', ['resume' => $resume]);
     }
 
     /**
@@ -80,8 +103,14 @@ class ResumeController extends Controller
     public function edit($id)
     {
         $resume = Resume::find($id);
+
+        // Check for correct user
+        if(auth()->user()->id !== $resume->user_id && auth()->user()->id != 1){
+            return redirect('/resumes')->with('error', '權限不足');
+        }
+
         $tags = Tag::all();
-        return view('resume.edit' ,['id' => $id, 'resume' => $resume, 'tags' => $tags]);
+        return view('resumes.edit' ,['id' => $id, 'resume' => $resume, 'tags' => $tags]);
     }
 
     /**
@@ -93,12 +122,24 @@ class ResumeController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->validate($request,
+            [
+                'resume' => 'required',
+                'resume_content' => 'required'
+            ],
+            [
+                'resume.required' => '標題欄不可為空',
+                'resume_content.required' => '內文欄不可為空'
+            ]
+        );
+        
         $resume = $request->input('resume');
         $resume_content = $request->input('resume_content');
         $tags = $request->input();
         array_shift($tags);
         array_shift($tags);
         array_shift($tags);
+        array_pop($tags);
 
         $oldResume = Resume::find($id);
         $oldResume->resume = $resume;
@@ -106,7 +147,7 @@ class ResumeController extends Controller
         $oldResume->tags()->sync($tags);
         $oldResume->save();
 
-        return Redirect::to("resumes/$id")->with('success', 'Resume updated successfully');
+        return Redirect::to("resumes/$id")->with('success', '履歷更新成功！');
     }
 
     /**
@@ -118,9 +159,15 @@ class ResumeController extends Controller
     public function destroy($id)
     {
         $oldResume = Resume::find($id);
+
+        // Check for correct user
+        if(auth()->user()->id !== $oldResume->user_id && auth()->user()->id != 1){
+            return redirect('/resumes')->with('error', '權限不足');
+        }
+
         $oldResume->tags()->detach();
         $oldResume->delete();
         
-        return Redirect::to('resumes')->with('success', 'Resume deleted successfully');
+        return Redirect::to('resumes')->with('success', '履歷刪除成功！');
     }
 }

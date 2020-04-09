@@ -7,8 +7,18 @@ use App\Tag;
 use App\Resume;
 use Redirect;
 
-class TagController extends Controller
+class TagsController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -16,8 +26,13 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::all();
-        return view('tag.index', ['tags' => $tags]);
+        // Check for correct user
+        if(auth()->user()->id !== 1){
+            return redirect('/resumes')->with('error', '權限不足');
+        }
+        
+        $tags = Tag::orderBy('created_at', 'desc')->paginate(10);
+        return view('tags.index', ['tags' => $tags]);
     }
 
     /**
@@ -27,7 +42,12 @@ class TagController extends Controller
      */
     public function create()
     {
-        return view('tag.create');
+        // Check for correct user
+        if(auth()->user()->id !== 1){
+            return redirect('/resumes')->with('error', '權限不足');
+        }
+
+        return view('tags.create');
     }
 
     /**
@@ -38,9 +58,18 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request,
+            [
+                'tag' => 'required'
+            ],
+            [
+                'tag.required' => '標籤名稱不可為空'
+            ]
+        );
+
         $tag = $request->input('tag');
         $newTag = Tag::create(['tag' => $tag]);
-        return Redirect::to('tags')->with('success', 'Tag stored successfully');
+        return Redirect::to('tags')->with('success', '標籤建立成功！');
     }
 
     /**
@@ -51,9 +80,14 @@ class TagController extends Controller
      */
     public function show(Request $request, $id)
     {
+        // Check for correct user
+        if(auth()->user()->id !== 1){
+            return redirect('/resumes')->with('error', '權限不足');
+        }
+
         $tag = Tag::find($id);
         $resumes = Resume::all();
-        return view('tag.show', ['tag' => $tag, 'resumes' => $resumes]);
+        return view('tags.show', ['tag' => $tag, 'resumes' => $resumes]);
     }
 
     /**
@@ -64,8 +98,13 @@ class TagController extends Controller
      */
     public function edit($id)
     {
+        // Check for correct user
+        if(auth()->user()->id !== 1){
+            return redirect('/resumes')->with('error', '權限不足');
+        }
+        
         $tag = Tag::find($id);
-        return view('tag.edit' ,['id' => $id, 'tag' => $tag]);
+        return view('tags.edit' ,['id' => $id, 'tag' => $tag]);
     }
 
     /**
@@ -77,13 +116,22 @@ class TagController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->validate($request,
+            [
+                'tag' => 'required'
+            ],
+            [
+                'tag.required' => '標籤名稱不可為空'
+            ]
+        );
+        
         $tag = $request->input('tag');
         $oldTag = Tag::find($id);
         $oldTag->tag = $tag;
         $oldTag->save();
         // $oldTag = Tag::create(['tag' => $tag]);
 
-        return Redirect::to("tags")->with('success', 'Tag updated successfully');
+        return Redirect::to("tags")->with('success', '標籤更新成功！');
     }
 
     /**
@@ -98,6 +146,6 @@ class TagController extends Controller
         $oldTag->resumes()->detach();
         $oldTag->delete();
         
-        return Redirect::to('tags')->with('success', 'Tag deleted successfully');
+        return Redirect::to('tags')->with('success', '標籤刪除成功！');
     }
 }

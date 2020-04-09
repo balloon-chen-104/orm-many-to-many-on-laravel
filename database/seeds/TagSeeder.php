@@ -13,15 +13,11 @@ class TagSeeder extends Seeder
     public function run()
     {
         $newTag = new Tag();
-        $newTag->tag = 'tag A';
+        $newTag->tag = '工程師';
         $newTag->save();
         
         $newTag = new Tag();
-        $newTag->tag = 'tag B';
-        $newTag->save();
-        
-        $newTag = new Tag();
-        $newTag->tag = 'tag C';
+        $newTag->tag = '設計師';
         $newTag->save();
     }
 }

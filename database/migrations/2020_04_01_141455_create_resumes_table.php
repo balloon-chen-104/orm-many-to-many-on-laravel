@@ -15,8 +15,9 @@ class CreateResumesTable extends Migration
     {
         Schema::create('resumes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->text('resume')->comment('履歷');
-            $table->string('resume_content')->comment('履歷內容');
+            $table->text('resume');
+            $table->mediumText('resume_content');
+            $table->integer('user_id');
             $table->timestamps();
         });
     }

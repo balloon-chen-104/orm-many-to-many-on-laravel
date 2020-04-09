@@ -13,10 +13,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'PagesController@index');
 
-Route::resource('/resumes', 'ResumeController');
+Route::resource('/resumes', 'ResumesController');
 
-Route::resource('/tags', 'TagController');
+Route::resource('/tags', 'TagsController');
+
+Auth::routes();
+
+Route::get('/dashboard', 'DashboardController@index')->name('index');
+
+Route::get('/user/{id}', 'UsersController@show');
+Route::get('/user/{id}/edit', 'UsersController@edit');
+Route::put('/user/{id}', 'UsersController@update');
+// Route::get('/dashboard', 'DashboardController@index')->name('index');
