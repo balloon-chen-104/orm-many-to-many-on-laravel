@@ -26,4 +26,5 @@ Route::get('/dashboard', 'DashboardController@index')->name('index');
 Route::get('/user/{id}', 'UsersController@show');
 Route::get('/user/{id}/edit', 'UsersController@edit');
 Route::put('/user/{id}', 'UsersController@update');
-// Route::get('/dashboard', 'DashboardController@index')->name('index');
+
+// Route::get('/cache', 'CacheController@index');

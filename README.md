@@ -35,7 +35,7 @@ orm-many-to-many-on-laravel/laradoc$ cp env-example .env
 To run the server on localhost, you need to open the docker application and run the command below.
 
 ```
-orm-many-to-many-on-laravel/laradoc$ docker-compose up -d nginx mysql redis workspace
+orm-many-to-many-on-laravel/laradoc$ docker-compose up -d nginx mysql redis
 ```
 
 Well done! If you want to shut down the server, run the following command.
@@ -44,9 +44,19 @@ Well done! If you want to shut down the server, run the following command.
 orm-many-to-many-on-laravel/laradoc$ docker-compose down
 ```
 
+### Cashe
+
+We use Redis cashe server to improve efficiency. In order to connect to it, you should adjust the environment settings of REDIS in .env file in the root folder. By default, it may work like this.
+
+```
+REDIS_HOST=redis
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+```
+
 ### Database
 
-In order to use database, you should adjust the environment settings of DB in .env file in the root folder. By default, it may work like this.
+In order to connect to database, you should adjust the environment settings of DB in .env file in the root folder. By default, it may work like this.
 
 ```
 DB_CONNECTION=mysql

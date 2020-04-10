@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Tag;
 use App\Resume;
 use Redirect;
+use Illuminate\Support\Facades\Redis;
 
 class TagsController extends Controller
 {
@@ -116,6 +117,10 @@ class TagsController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // 使用 redis 讓 redis 過期
+        Redis::flushall();
+        // 使用 redis 結束
+
         $this->validate($request,
             [
                 'tag' => 'required'
@@ -142,6 +147,10 @@ class TagsController extends Controller
      */
     public function destroy($id)
     {
+        // 使用 redis 讓 redis 過期
+        Redis::flushall();
+        // 使用 redis 結束
+
         $oldTag = Tag::find($id);
         $oldTag->resumes()->detach();
         $oldTag->delete();

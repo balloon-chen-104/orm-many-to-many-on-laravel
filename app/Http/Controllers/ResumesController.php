@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Resume;
 use App\Tag;
 use Redirect;
+use Illuminate\Support\Facades\Redis;
 
 class ResumesController extends Controller
 {
@@ -26,6 +27,24 @@ class ResumesController extends Controller
      */
     public function index()
     {
+        // 使用 redis
+        if(Redis::exists("resumes")){
+            $redis_message =  '快取存在，直接載入資料';
+            $resumes = json_decode(Redis::get("resumes"));
+        }
+        else {
+            $redis_message = "快取過期，連回資料庫加載";
+            $resumes = Resume::orderBy('created_at', 'desc')->get();
+            foreach($resumes as $resume){
+                $resume->tags;
+                $resume->user;
+            }
+            Redis::set("resumes", json_encode($resumes));
+            Redis::expire("resumes", 600);
+        }
+        return view('resumes.index', ['resumes' => $resumes, 'redis_message' => $redis_message]);
+        // 使用 redis 結束
+        
         $resumes = Resume::orderBy('created_at', 'desc')->paginate(5);
         return view('resumes.index', ['resumes' => $resumes]);
     }
@@ -49,6 +68,10 @@ class ResumesController extends Controller
      */
     public function store(Request $request)
     {
+        // 使用 redis 讓 redis 過期
+        Redis::del("resumes");
+        // 使用 redis 結束
+
         $this->validate($request,
             [
                 'resume' => 'required',
@@ -90,6 +113,22 @@ class ResumesController extends Controller
      */
     public function show(Request $request, $id)
     {
+        // 使用 redis
+        if(Redis::exists("resume/$id")){
+            $redis_message =  '快取存在，直接載入資料';
+            $resume = json_decode(Redis::get("resume/$id"));
+        }
+        else {
+            $redis_message = "快取過期，連回資料庫加載";
+            $resume = Resume::find($id);
+            $resume->tags;
+            $resume->user;
+            Redis::set("resume/$id", json_encode($resume));
+            Redis::expire("resume/$id", 600);
+        }
+        return view('resumes.show', ['resume' => $resume, 'redis_message' => $redis_message]);
+        // 使用 redis 結束
+
         $resume = Resume::find($id);
         return view('resumes.show', ['resume' => $resume]);
     }
@@ -122,6 +161,11 @@ class ResumesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // 使用 redis 讓 redis 過期
+        Redis::del("resume/$id");
+        Redis::del("resumes");
+        // 使用 redis 結束
+
         $this->validate($request,
             [
                 'resume' => 'required',
@@ -158,6 +202,11 @@ class ResumesController extends Controller
      */
     public function destroy($id)
     {
+        // 使用 redis 讓 redis 過期
+        Redis::del("resume/$id");
+        Redis::del("resumes");
+        // 使用 redis 結束
+
         $oldResume = Resume::find($id);
 
         // Check for correct user
